@@ -1,0 +1,24 @@
+{
+  "name": "daily-30-seconds-code",
+  "version": "1.0.0",
+  "description": "Practice one of 30-seconds-of-code everyday",
+  "bin": {
+    "daily30s": "./bin/daily30s"
+  },
+  "main": "./daily30s.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "30-seconds-of-code"
+  ],
+  "author": "yuzima <mayuz.bubupu@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "30-seconds-of-code": "^1.1.0",
+    "markdown-builder": "^0.9.0",
+    "workshopper-adventure": "^6.0.4",
+    "workshopper-exercise": "^3.0.1",
+    "workshopper-wrappedexec": "^0.1.3"
+  }
+}
