@@ -13,6 +13,10 @@
     "30-seconds-of-code"
   ],
   "author": "yuzima <mayuz.bubupu@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuzima/daily-30-seconds-code.git"
+  },
   "license": "ISC",
   "dependencies": {
     "30-seconds-of-code": "^1.1.0",
