@@ -3,35 +3,57 @@ const fs = require('fs');
 const markdown = require('markdown-builder');
 const { headers } = markdown;
 
-const random = function() {
-  const snippetDir = path.dirname(require.resolve('30-seconds-of-code/snippets/all.md'));
+function random() {
+  // get the directory of snippets
+  const dir = path.resolve(
+    require.resolve('30-seconds-of-code'),
+    '../../snippets'
+  );
 
-  // load all md files
-  const exercises = fs
-    .readdirSync(snippetDir)
-    .map(file => file.match(/^(\w+)\.md$/)[1]);
+  // load all markdown files
+  const exs = fs.readdirSync(dir).map(file => file.match(/^(\w+)\.md$/)[1]);
 
-  const exercise = exercises[Math.floor(Math.random() * exercises.length)];
-  loadSnippetFile.apply(this, [snippetDir, exercise]);
-}
+  const ex = exs[Math.floor(Math.random() * exs.length)];
+  loadSnippetFile.apply(this, [dir, ex]);
+};
 
-const loadSnippetFile = function (snippetDir, exercise) {
-  const destDir = `./exercises/${exercise}`;
-  mkdir(`./exercises/${exercise}`);
+function loadSnippetFile(srcDir, ex) {
+  const destDir = `./exercises/${ex}`;
+  mkdir(destDir);
 
-  fs.readFile(`${snippetDir}/${exercise}.md`, 'utf8', (err, data) => {
+  fs.readFile(`${srcDir}/${ex}.md`, 'utf8', (err, data) => {
     const snippet = data.split('\n\n');
 
-    let output = headers.h1(snippet[0].slice(data.indexOf('###') + 4)) + snippet[1] + headers.h2('Examples') + snippet[4];
+    // generate problem file
+    let output =
+      headers.h1(snippet[0].slice(data.indexOf('###') + 4)) +
+      snippet[1] +
+      headers.h2('Examples') +
+      snippet[4];
     fs.writeFileSync(`${destDir}/problem.md`, output);
 
+    // copy exercise.js
     fs.copyFileSync('./src/exercise.js', `${destDir}/exercise.js`);
-    this.add(exercise);
-    this.execute(['select', exercise]);
+
+    // generate solution file
+    output = `/*\n${snippet[1]}\n*/\n\n`;
+    output += snippet[3].slice(6, snippet[3].length - 5);
+    mkdir(`${destDir}/solution`);
+    fs.writeFileSync(`${destDir}/solution/solution.js`, output);
+
+    select.apply(this, ex);
   });
 };
 
-const mkdir = dir => {
+function select(ex) {
+  // add exercise to workshopper
+  this.add(ex);
+
+  // simulate the selection the exercise
+  this.execute(['select', ex]);
+}
+
+function mkdir(dir) {
   if (fs.existsSync(dir)) {
     return
   }
@@ -45,4 +67,6 @@ const mkdir = dir => {
   }
 }
 
-exports.random = random;
+module.exports = {
+  random
+};

@@ -10,6 +10,10 @@ const daily30s = require('workshopper-adventure')({
 function run(arguments) {
   if (arguments[0] === 'new') {
     require('./src/new').random.apply(daily30s);
+  } else if (arguments[0] === 'print') {
+    const ex = daily30s.appStorage.get('current');
+    daily30s.add(ex);
+    daily30s.execute([...arguments, ex]);
   }
 }
 
