@@ -14,6 +14,10 @@ function run(arguments) {
     const ex = daily30s.appStorage.get('current');
     daily30s.add(ex);
     daily30s.execute([...arguments, ex]);
+  } else if (['run', 'verify'].includes(arguments[0])) {
+    const ex = daily30s.appStorage.get('current');
+    daily30s.add(ex);
+    daily30s.execute(arguments);
   }
 }
 

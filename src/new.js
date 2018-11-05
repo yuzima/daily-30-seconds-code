@@ -37,11 +37,12 @@ function loadSnippetFile(srcDir, ex) {
 
     // generate solution file
     output = `/*\n${snippet[1]}\n*/\n\n`;
-    output += snippet[3].slice(6, snippet[3].length - 5);
+    output += snippet[3].slice(6, snippet[3].length - 5) + '\n\n';
+    output += snippet[4].slice(6, snippet[4].length - 5);
     mkdir(`${destDir}/solution`);
     fs.writeFileSync(`${destDir}/solution/solution.js`, output);
 
-    select.apply(this, ex);
+    select.apply(this, [ex]);
   });
 };
 
