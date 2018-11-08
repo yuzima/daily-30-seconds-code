@@ -36,15 +36,23 @@ function loadSnippetFile(srcDir, ex) {
     fs.copyFileSync('./src/exercise.js', `${destDir}/exercise.js`);
 
     // generate solution file
-    output = `/*\n${snippet[1]}\n*/\n\n`;
-    output += snippet[3].slice(6, snippet[3].length - 5) + '\n\n';
-    output += snippet[4].slice(6, snippet[4].length - 5);
-    mkdir(`${destDir}/solution`);
-    fs.writeFileSync(`${destDir}/solution/solution.js`, output);
+    generateSolution(destDir, snippet);
 
     select.apply(this, [ex]);
   });
 };
+
+function generateSolution(destDir, snippet) {
+  const test = snippet[4].slice(6, snippet[4].length - 5).split('\n\n');
+  let output = `/*\n${snippet[1]}\n*/\n\n`;
+  output += snippet[3].slice(6, snippet[3].length - 5) + '\n\n';
+  output += test.reduce((accumulator, current) => {
+    const hasReturn = current.match(/(.+);\s\/\/\s.+$/);
+    return accumulator + (hasReturn ? `console.log(${hasReturn[1]});\n` : `${current}\n`);
+  }, '');
+  mkdir(`${destDir}/solution`);
+  fs.writeFileSync(`${destDir}/solution/solution.js`, output);
+}
 
 function select(ex) {
   // add exercise to workshopper
@@ -56,7 +64,7 @@ function select(ex) {
 
 function mkdir(dir) {
   if (fs.existsSync(dir)) {
-    return
+    return;
   }
   try {
     fs.mkdirSync(dir)
