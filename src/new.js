@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const markdown = require('markdown-builder');
+const history = require('./history');
 const { headers } = markdown;
 
 function random() {
@@ -13,8 +14,16 @@ function random() {
   // load all markdown files
   const exs = fs.readdirSync(dir).map(file => file.match(/^(\w+)\.md$/)[1]);
 
-  const ex = exs[Math.floor(Math.random() * exs.length)];
+  let ex = null;
+  // check if the exercise has been finished
+  do {
+    ex = exs[Math.floor(Math.random() * exs.length)];
+  } while(history.isFinished(ex));
+
   loadSnippetFile.apply(this, [dir, ex]);
+
+  // record this exercise to history.json
+  history.add(ex);
 };
 
 function loadSnippetFile(srcDir, ex) {
