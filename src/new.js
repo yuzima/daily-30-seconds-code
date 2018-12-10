@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const markdown = require('markdown-builder');
 const history = require('./history');
+const { mkdir } = require('./utils');
 const { headers } = markdown;
 
 function random() {
@@ -41,24 +42,28 @@ function loadSnippetFile(srcDir, ex) {
       snippet[4];
     fs.writeFileSync(`${destDir}/problem.md`, output);
 
-    // copy exercise.js
-    fs.copyFileSync('./src/exercise.js', `${destDir}/exercise.js`);
+    // generate exercise.js
+    fs.readFile('./src/exercise.js', 'utf8', (err, data) => {
+      fs.writeFile(`${destDir}/exercise.js`, data.replace(/\${exercise}/, ex));
+    });
+    // fs.copyFileSync('./src/exercise.js', `${destDir}/exercise.js`);
 
     // generate solution file
-    generateSolution(destDir, snippet);
+    generateSolution(destDir, snippet, ex);
 
     select.apply(this, [ex]);
   });
 };
 
-function generateSolution(destDir, snippet) {
-  const test = snippet[4].slice(6, snippet[4].length - 5).split('\n\n');
+function generateSolution(destDir, snippet, ex) {
+  // const test = snippet[4].slice(6, snippet[4].length - 5).split('\n\n');
   let output = `/*\n${snippet[1]}\n*/\n\n`;
   output += snippet[3].slice(6, snippet[3].length - 5) + '\n\n';
-  output += test.reduce((accumulator, current) => {
-    const hasReturn = current.match(/(.+);\s\/\/\s.+$/);
-    return accumulator + (hasReturn ? `console.log(${hasReturn[1]});\n` : `${current}\n`);
-  }, '');
+  // output += test.reduce((accumulator, current) => {
+  //   const hasReturn = current.match(/(.+);\s\/\/\s.+$/);
+  //   return accumulator + (hasReturn ? `console.log(${hasReturn[1]});\n` : `${current}\n`);
+  // }, '');
+  output += `module.exports = ${ex};`;
   mkdir(`${destDir}/solution`);
   fs.writeFileSync(`${destDir}/solution/solution.js`, output);
 }
@@ -69,20 +74,6 @@ function select(ex) {
 
   // simulate the selection the exercise
   this.execute(['select', ex]);
-}
-
-function mkdir(dir) {
-  if (fs.existsSync(dir)) {
-    return;
-  }
-  try {
-    fs.mkdirSync(dir)
-  } catch (err) {
-    if (err.code == 'ENOENT') {
-      mkdir(path.dirname(dir)); //create parent dir
-      mkdir(dir); //create dir
-    }
-  }
 }
 
 module.exports = {

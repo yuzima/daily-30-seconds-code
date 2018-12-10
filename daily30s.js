@@ -16,7 +16,11 @@ function run(arguments) {
   } else if (arguments[0] === 'print') {
     const ex = daily30s.appStorage.get('current');
     daily30s.execute([...arguments, ex]);
-  } else if (['run', 'verify'].includes(arguments[0])) {
+  } else if (arguments[0] === 'run') {
+    daily30s.execute(arguments);
+  } else if (arguments[0] === 'verify') {
+    const ex = daily30s.appStorage.get('current');
+    require('./src/verify').generateTestFile.apply(daily30s, ex, arguments[1]);
     daily30s.execute(arguments);
   }
 }
